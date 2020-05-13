@@ -61,11 +61,11 @@ lint: isort black flake8 mypy
 # =================================================================================================
 
 test:
-	$(py) pytest --cov=aiogram_cli --cov-config .coveragerc tests/
+	$(py) pytest --cov=magic-filter --cov-config .coveragerc tests/
 
 test-coverage:
 	mkdir -p $(reports_dir)/tests/
-	$(py) pytest --cov=aiogram_cli --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
+	$(py) pytest --cov=magic-filter --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
 	$(py) coverage html -d $(reports_dir)/coverage
 
 test-coverage-report:
@@ -78,4 +78,4 @@ test-coverage-report:
 build: clean flake8-report mypy-report test-coverage docs docs-copy-reports
 	mkdir -p site/simple
 	poetry build
-	mv dist site/simple/aiogram_cli
+	mv dist site/simple/magic-filter
