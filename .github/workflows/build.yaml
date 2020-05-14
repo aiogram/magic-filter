@@ -58,16 +58,16 @@ jobs:
           path: dist/*.whl
 
       - name: build
-        if: ${{ matrix.os == 'ubuntu-linux' && matrix.python-version == '3.8' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
         env:
           SKIP_CYTHON: 1
-        run:
+        run: |
           rm -rf dist
           poetry build
           rename 's/^([a-z-_]+)-([\d\w.]+)-\w+-\w+-\w+\.whl$/$1-$2-py3-none-any.whl/' dist/*.whl
 
       - name: publish artifacts
-        if: ${{ matrix.os == 'ubuntu-linux' && matrix.python-version == '3.8' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
         uses: actions/upload-artifact@v2
         with:
           path: dist/*
