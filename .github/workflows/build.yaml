@@ -31,6 +31,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install ependencies
+        env:
+          SKIP_CYTHON: 1
         run: |
           pip install -U pip
           pip install poetry
@@ -65,6 +67,7 @@ jobs:
           rename 's/^([a-z-_]+)-([\d\w.]+)-\w+-\w+-\w+\.whl$/$1-$2-py3-none-any.whl/' dist/*.whl
 
       - name: publish artifacts
+        if: ${{ matrix.os == 'ubuntu-linux' && matrix.python-version == '3.8' }}
         uses: actions/upload-artifact@v2
         with:
           path: dist/*
