@@ -9,7 +9,7 @@ on:
   pull_request: {}
 
 jobs:
-  "test & build":
+  test-n-build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
