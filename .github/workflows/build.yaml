@@ -32,8 +32,8 @@ jobs:
 
       - name: Install ependencies
         run: |
-          curl -fsS -o get-poetry.py https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
-          python get-poetry.py --preview -y
+          pip install -U pip
+          pip install poetry
           poetry config virtualenvs.create false
           poetry install
 
