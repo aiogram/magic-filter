@@ -21,8 +21,11 @@ keywords = [
 	"validation"
 ]
 
+include = ["magic_filter/py.typed"]
+build = "build.py"
+
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.4.0"

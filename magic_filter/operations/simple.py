@@ -1,32 +1,21 @@
-from __future__ import annotations
-
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List, TypeVar
+from typing import List, Any
 
-from ..attribute import Attribute
+from ..attribute import Attribute, resolve_attribute
 from .bases import BaseOperation
-
-if TYPE_CHECKING:
-    from .. import MagicFilter
-
-T = TypeVar("T")
-LeftOperand = TypeVar("LeftOperand")
-RightOperand = TypeVar("RightOperand")
 
 
 class SimpleOperation(BaseOperation, ABC):
-    def __init__(self, value: Any, magic: MagicFilter) -> None:
+    def __init__(self, value: Any, chain: List[Attribute]) -> None:
         super().__init__(value=value)
-        self.magic = magic
+        self._chain = chain
 
-    @property
-    def chain(self) -> List[Attribute]:
-        return self.magic.chain
-
-    def run(self, obj: Any) -> bool:
-        value = self.magic.resolve_attribute(obj)
+    def __call__(self, obj: Any) -> bool:
+        value = resolve_attribute(obj, self._chain)
         return self.resolve(value)
 
     @abstractmethod
     def resolve(self, value: Any) -> bool:
         pass
+
+    __slots__ = ("value", "magic", "_chain")

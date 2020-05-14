@@ -1,15 +1,7 @@
 from .all import AllFuncOperation
 from .any import AnyFuncOperation
 from .attr import AttrOperation
-from .bases import (
-    AndOperation,
-    BaseOperation,
-    DataType,
-    LeftOperand,
-    NotOperation,
-    OrOperation,
-    RightOperand,
-)
+from .bases import AndOperation, BaseOperation, NotOperation, OrOperation
 from .contains import ContainsOperation
 from .equals import EqualsOperation, NotEqualsOperation
 from .func import FuncOperation
@@ -24,9 +16,6 @@ __all__ = [
     "AndOperation",
     "BaseOperation",
     "AndOperation",
-    "DataType",
-    "LeftOperand",
-    "RightOperand",
     "NotOperation",
     "NotOperation",
     "OrOperation",

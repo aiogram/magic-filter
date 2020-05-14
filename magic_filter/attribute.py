@@ -1,19 +1,20 @@
-from dataclasses import dataclass
-from typing import List, Optional, Sized, Type, TypeVar
+from functools import reduce
+from typing import Any, Iterable, List, Optional, Sized, Tuple, Type, TypeVar
 
 T = TypeVar("T", bound="Attribute")
 
 
-@dataclass
 class Attribute:
     name: str
-    modifiers: Optional[List[str]] = None
+    modifiers: Tuple[str, ...]
 
-    def __str__(self) -> str:
-        parts = [self.name]
-        if self.modifiers:
-            parts.extend(self.modifiers)
-        return "__".join(parts)
+    def __init__(self, name: str, modifiers: Optional[Iterable[str]]) -> None:
+        self.name = name
+
+        if isinstance(modifiers, Iterable):
+            modifiers = tuple(modifiers)
+
+        self.modifiers = modifiers or ()
 
     @classmethod
     def parse(cls: Type[T], value: str) -> T:
@@ -31,3 +32,21 @@ class Attribute:
         if not isinstance(value, Sized):
             raise ValueError("Value for modifier `len` should be sized")
         return len(value)
+
+    __slots__ = ("name", "modifiers")
+
+
+def _resolver(item: Any, attr: Attribute) -> Any:
+    result = getattr(item, attr.name)
+    if attr.modifiers:
+        for modifier in attr.modifiers:
+            try:
+                modifier_func = getattr(attr, f"modifier_{modifier}")
+            except AttributeError:
+                raise AttributeError(f"{modifier!r} modifier is not supported")
+            result = modifier_func(result)
+    return result
+
+
+def resolve_attribute(obj: Any, chain: List[Attribute]) -> Any:
+    return reduce(_resolver, chain, obj)
