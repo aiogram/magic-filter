@@ -48,12 +48,12 @@ jobs:
 
       - name: compile
         run: |
-          poetry build -f wheel
+          poetry build
 
       - name: publish compiled artifacts
         uses: actions/upload-artifact@v2
         with:
-          path: dist/*
+          path: dist/*.whl
 
       - name: build
         if: ${{ matrix.os == 'ubuntu-linux' && matrix.python-version == '3.8' }}
