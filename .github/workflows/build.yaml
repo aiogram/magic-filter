@@ -6,7 +6,7 @@ on:
       - '*'
     tags:
       - '**'
-  pull_request: {}
+#  pull_request: {}
 
 jobs:
   test-n-build:
@@ -32,8 +32,8 @@ jobs:
 
       - name: Install ependencies
         run: |
-          pip install -U pip
-          pip install poetry
+          curl -fsS -o get-poetry.py https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py
+          python get-poetry.py --preview -y
           poetry config virtualenvs.create false
           poetry install
 
@@ -47,18 +47,24 @@ jobs:
         run: mypy magic_filter
 
       - name: compile
-        env:
-          CYTHON_TRACE: 1
-        run: poetry build -f wheel
-
-      - name: build
-        if: ${{ matrix.os == 'ubuntu-linux' && matrix.architecture == 'x64' && matrix.python-version == '3.8' }}
-        env:
-          CYTHON_TRACE: 0
-        run:
-          poetry build
+        run: |
+          poetry build -f wheel
 
       - name: publish compiled artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*
+
+      - name: build
+        if: ${{ matrix.os == 'ubuntu-linux' && matrix.python-version == '3.8' }}
+        env:
+          SKIP_CYTHON: 1
+        run:
+          rm -rf dist
+          poetry build
+          rename 's/^([a-z-_]+)-([\d\w.]+)-\w+-\w+-\w+\.whl$/$1-$2-py3-none-any.whl/' dist/*.whl
+
+      - name: publish artifacts
         uses: actions/upload-artifact@v2
         with:
           path: dist/*

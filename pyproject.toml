@@ -22,7 +22,7 @@ keywords = [
 ]
 
 include = ["magic_filter/py.typed"]
-#build = "build.py"
+build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
@@ -34,6 +34,7 @@ mypy = "^0.770"
 black = "^19.10b0"
 flake8 = "^3.8.1"
 isort = {extras = ["pyproject"], version = "^4.3.21"}
+auditwheel = "^3.1.1"
 
 [tool.black]
 line-length = 99
