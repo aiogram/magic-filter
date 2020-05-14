@@ -28,14 +28,14 @@ class AndOperation(BaseOperation):
         self.other_value = other_value
 
     def __call__(self, obj: Any) -> Any:
-        return self.value.__call__(obj=obj) and self.other_value.__call__(obj=obj)
+        return self.value(obj=obj) and self.other_value(obj=obj)
 
 
 class OrOperation(AndOperation):
     def __call__(self, obj: Any) -> Any:
-        return self.value.__call__(obj) or self.other_value.__call__(obj)
+        return self.value(obj) or self.other_value(obj)
 
 
 class NotOperation(BaseOperation):
     def __call__(self, obj: Any) -> bool:
-        return not self.value.__call__(obj)
+        return not self.value(obj)

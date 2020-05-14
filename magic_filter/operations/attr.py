@@ -13,3 +13,5 @@ class AttrOperation(SimpleOperation):
 
     def resolve(self, value: Any) -> bool:
         return self.operation(value, self.value)
+
+    __slots__ = ("operation", "value", "magic")

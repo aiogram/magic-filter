@@ -21,7 +21,7 @@ class MagicFilter:
         self._chain = chain
 
     def __call__(self, obj: Any) -> bool:
-        value = resolve_attribute(self, obj)
+        value = resolve_attribute(obj, self.get_chain())
         return value is not None
 
     def __getitem__(self, item: str) -> "MagicFilter":
@@ -73,13 +73,13 @@ class MagicFilter:
         """
         return FuncOperation(value=value, magic=self)
 
-    def all(self, *call: Callable[[Any, Any], bool]) -> AllFuncOperation:
+    def all(self, *call: Callable[[Any], bool]) -> AllFuncOperation:
         """
         Analog of builtin all(Iterable[Any])
         """
         return AllFuncOperation(value=call, magic=self)
 
-    def any(self, *call: Callable[[Any, Any], bool]) -> AnyFuncOperation:
+    def any(self, *call: Callable[[Any], bool]) -> AnyFuncOperation:
         """
         Analog of builtin any(Iterable[Any])
         """
