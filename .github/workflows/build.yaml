@@ -44,17 +44,19 @@ jobs:
           black --check --diff magic_filter
 
       - name: mypy
-        run: |
-          mypy magic_filter
+        run: mypy magic_filter
 
       - name: compile
-        run: |
-          CYTHON_TRACE=1 poetry build wheel
+        env:
+          CYTHON_TRACE: 1
+        run: poetry build wheel
 
       - name: build
         if: ${{ matrix.os == 'ubuntu-linux' && matrix.architecture == 'x64' && matrix.python-version == '3.8' }}
-        run: |
-          CYTHON_TRACE=0 poetry build
+        env:
+          CYTHON_TRACE: 0
+        run:
+          poetry build
 
       - name: publish compiled artifacts
         uses: actions/upload-artifact@v2
