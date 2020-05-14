@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Any
+from typing import Any, List
 
 from ..attribute import Attribute, resolve_attribute
 from .bases import BaseOperation

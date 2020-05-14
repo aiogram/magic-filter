@@ -1,0 +1,65 @@
+name: build
+
+on:
+  push:
+    branches:
+      - actions
+    tags:
+      - '**'
+  pull_request: {}
+
+jobs:
+  "test & build":
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        python-version:
+          - 3.7
+          - 3.8
+        architecture:
+          - x86
+          - x64
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }} ${{ matrix.architecture }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.architecture }}
+
+      - name: Install ependencies
+        run: |
+          pip install -U pip
+          pip install poetry
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Lint
+        run: |
+          flake8 magic_filter
+          isort --check-only -df magic_filter
+          black --check --diff magic_filter
+
+      - name: mypy
+        run: |
+          mypy magic_filter
+
+      - name: compile
+        run: |
+          CYTHON_TRACE=1 poetry build wheel
+
+      - name: build
+        if: ${{ matrix.os == 'ubuntu-linux' && matrix.architecture == 'x64' && matrix.python-version == '3.8' }}
+        run: |
+          CYTHON_TRACE=0 poetry build
+
+      - name: publish compiled artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/*
