@@ -5,6 +5,7 @@ if not os.getenv("SKIP_CYTHON", None):
         from Cython.Build import cythonize
     except ImportError:
         cythonize = None
+        ext_modules = None
     else:
         compiler_directives = {}
         if os.getenv("CYTHON_TRACE", False):

@@ -35,6 +35,7 @@ black = "^19.10b0"
 flake8 = "^3.8.1"
 isort = {extras = ["pyproject"], version = "^4.3.21"}
 auditwheel = "^3.1.1"
+cython = "^0.29.17"
 
 [tool.black]
 line-length = 99
