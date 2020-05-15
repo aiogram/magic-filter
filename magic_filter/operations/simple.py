@@ -11,7 +11,10 @@ class SimpleOperation(BaseOperation, ABC):
         self._chain = chain
 
     def __call__(self, obj: Any) -> bool:
-        value = resolve_attribute(obj, self._chain)
+        try:
+            value = resolve_attribute(obj, self._chain)
+        except AttributeError:
+            return False
         return self.resolve(value)
 
     @abstractmethod
