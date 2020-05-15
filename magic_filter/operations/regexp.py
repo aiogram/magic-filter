@@ -5,6 +5,6 @@ from .func import FuncOperation
 
 
 class RegexpOperation(FuncOperation):
-    def resolve(self, value: Any) -> bool:
-        result = re.match(self.value, value)
+    def _resolve(self, value: Any) -> bool:
+        result = re.match(self._value, value)
         return bool(result)

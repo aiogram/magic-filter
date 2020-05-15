@@ -3,8 +3,10 @@ from typing import Any
 
 
 class BaseOperation(ABC):
+    __slots__ = ("_value",)
+
     def __init__(self, value: Any) -> None:
-        self.value = value
+        self._value = value
 
     def __invert__(self) -> "NotOperation":
         return NotOperation(value=self)
@@ -21,21 +23,21 @@ class BaseOperation(ABC):
 
 
 class AndOperation(BaseOperation):
-    __slots__ = ("value", "other_value")
+    __slots__ = ("_value", "_other_value")
 
     def __init__(self, value: "BaseOperation", other_value: "BaseOperation") -> None:
         super().__init__(value=value)
-        self.other_value = other_value
+        self._other_value = other_value
 
     def __call__(self, obj: Any) -> Any:
-        return self.value(obj=obj) and self.other_value(obj=obj)
+        return self._value(obj=obj) and self._other_value(obj=obj)
 
 
 class OrOperation(AndOperation):
     def __call__(self, obj: Any) -> Any:
-        return self.value(obj) or self.other_value(obj)
+        return self._value(obj) or self._other_value(obj)
 
 
 class NotOperation(BaseOperation):
     def __call__(self, obj: Any) -> bool:
-        return not self.value(obj)
+        return not self._value(obj)

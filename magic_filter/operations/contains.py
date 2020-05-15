@@ -4,5 +4,5 @@ from .func import FuncOperation
 
 
 class ContainsOperation(FuncOperation):
-    def resolve(self, value: Any) -> bool:
-        return self.value in value
+    def _resolve(self, value: Any) -> bool:
+        return self._value in value

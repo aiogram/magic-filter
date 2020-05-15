@@ -23,6 +23,8 @@ clean:
 	rm -f `find . -type f -name '*~' `
 	rm -f `find . -type f -name '.*~' `
 	rm -rf `find . -name .pytest_cache`
+	rm -f `find . -type f -name '*.so' `
+	rm -f `find . -type f -name '*.c' `
 	rm -rf *.egg-info
 	rm -f .coverage
 	rm -f report.html

@@ -9,7 +9,7 @@ class AttrOperation(SimpleOperation):
         super().__init__(value=value, chain=chain)
         self.operation = operation
 
-    def resolve(self, value: Any) -> bool:
-        return self.operation(value, self.value)
+    def _resolve(self, value: Any) -> bool:
+        return self.operation(value, self._value)
 
-    __slots__ = ("operation", "value", "_chain")
+    __slots__ = ("operation", "_value", "_chain")

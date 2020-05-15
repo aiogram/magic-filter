@@ -1,20 +1,9 @@
-from dataclasses import dataclass
+from collections import namedtuple
 
 from magic_filter import MagicFilter
 
-
-@dataclass
-class Job:
-    place: str
-    salary: int
-    position: str
-
-
-@dataclass
-class User:
-    age: int
-    about: str
-    job: Job
+User = namedtuple("User", ["age", "about", "job"])
+Job = namedtuple("User", ["place", "salary", "position"])
 
 
 class TestMagicFilter:

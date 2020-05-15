@@ -4,10 +4,10 @@ from .simple import SimpleOperation
 
 
 class EqualsOperation(SimpleOperation):
-    def resolve(self, value: Any) -> bool:
-        return value == self.value  # type: ignore
+    def _resolve(self, value: Any) -> bool:
+        return value == self._value  # type: ignore
 
 
 class NotEqualsOperation(EqualsOperation):
-    def resolve(self, value: Any) -> bool:
-        return not super().resolve(value=value)
+    def _resolve(self, value: Any) -> bool:
+        return not super()._resolve(value=value)

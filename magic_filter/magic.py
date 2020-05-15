@@ -1,28 +1,23 @@
 from typing import Any, Callable, Iterable, List, Optional, Pattern, Union
 
-from .attribute import Attribute, resolve_attribute
+from .attribute import Attribute
 from .operations import (
-    AllFuncOperation,
-    AnyFuncOperation,
     AttrOperation,
     ContainsOperation,
     EqualsOperation,
     FuncOperation,
     InOperation,
     NotEqualsOperation,
+    NotNoneOperation,
     RegexpOperation,
 )
 
 
-class MagicFilter:
+class MagicFilter(NotNoneOperation):
     def __init__(self, chain: Optional[List[Attribute]] = None) -> None:
         if chain is None:
             chain = []
-        self._chain: List[Attribute] = chain
-
-    def __call__(self, obj: Any) -> bool:
-        value = resolve_attribute(obj, self._chain)
-        return value is not None
+        super().__init__(value=None, chain=chain)
 
     def __getitem__(self, item: str) -> "MagicFilter":
         attr = Attribute.parse(item)
@@ -72,20 +67,6 @@ class MagicFilter:
         Execute any callable on value
         """
         return FuncOperation(value=value, chain=self._chain)
-
-    def all(self, *call: Callable[[Any], bool]) -> AllFuncOperation:
-        """
-        Analog of builtin all(Iterable[Any])
-        """
-        return AllFuncOperation(value=call, chain=self._chain)
-
-    def any(self, *call: Callable[[Any], bool]) -> AnyFuncOperation:
-        """
-        Analog of builtin any(Iterable[Any])
-        """
-        return AnyFuncOperation(value=call, chain=self._chain)
-
-    __slots__ = ("_chain",)
 
 
 F = MagicFilter()
