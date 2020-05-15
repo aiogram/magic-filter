@@ -49,17 +49,22 @@ jobs:
       - name: mypy
         run: mypy magic_filter
 
-      - name: compile
+      - name: Compile Wheels
         run: |
           poetry build
 
-      - name: publish compiled artifacts
+      - name: Repair Linux Wheels
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          docker run -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 bash /io/scripts/repair-wheels.sh
+
+      - name: Publish compiled artifacts
         uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: dist/*.whl
 
-      - name: build
+      - name: Build sdist
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
         env:
           SKIP_CYTHON: 1
@@ -67,7 +72,7 @@ jobs:
           rm -rf dist
           poetry build --format sdist
 
-      - name: publish artifacts
+      - name: Publish builded artifacts
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
         uses: actions/upload-artifact@v2
         with:
