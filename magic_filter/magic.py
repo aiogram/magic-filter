@@ -8,9 +8,9 @@ from .operations import (
     FuncOperation,
     InOperation,
     NotEqualsOperation,
+    NotNoneOperation,
     RegexpOperation,
 )
-from .operations.not_none import NotNoneOperation
 
 
 class MagicFilter(NotNoneOperation):

@@ -6,6 +6,8 @@ from .bases import BaseOperation
 
 
 class SimpleOperation(BaseOperation, ABC):
+    __slots__ = ("_value", "_chain")
+
     def __init__(self, value: Any, chain: List[Attribute]) -> None:
         super().__init__(value=value)
         self._chain = chain
@@ -15,10 +17,8 @@ class SimpleOperation(BaseOperation, ABC):
             value = resolve_attribute(obj, self._chain)
         except AttributeError:
             return False
-        return self.resolve(value)
+        return self._resolve(value)
 
     @abstractmethod
-    def resolve(self, value: Any) -> bool:
+    def _resolve(self, value: Any) -> bool:
         pass
-
-    __slots__ = ("value", "magic", "_chain")

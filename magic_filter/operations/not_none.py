@@ -4,5 +4,5 @@ from .simple import SimpleOperation
 
 
 class NotNoneOperation(SimpleOperation):
-    def resolve(self, value: Any) -> bool:
+    def _resolve(self, value: Any) -> bool:
         return value is not None

@@ -4,5 +4,5 @@ from .simple import SimpleOperation
 
 
 class FuncOperation(SimpleOperation):
-    def resolve(self, value: Any) -> bool:
-        return cast(bool, self.value(value))
+    def _resolve(self, value: Any) -> bool:
+        return cast(bool, self._value(value))
