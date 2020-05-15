@@ -13,6 +13,6 @@ site/
 .dmypy.json
 .pytest_cache
 .coverage
-reports
+coverage.xml
 
 dev/

@@ -1,4 +1,4 @@
-name: build
+name: CI
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
 #  pull_request: {}
 
 jobs:
-  build:
-    name: Test & Build
+  test:
+    name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,8 +32,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        env:
-          SKIP_CYTHON: 1
         run: |
           pip install -U pip
           pip install poetry
@@ -49,35 +47,45 @@ jobs:
       - name: mypy
         run: mypy magic_filter
 
-      - name: Compile Wheels
+      - name: Test
+        run: |
+          pytest --cov=magic_filter --cov-config .coveragerc --cov-report=xml
+
+      # TODO: Add codecov integration
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: wheels
+          path: dist
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Build
         run: |
           poetry build
 
-      - name: Repair Linux Wheels
-        if: matrix.os == 'ubuntu-latest'
+      - name: Try install wheel
         run: |
-          docker run -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 bash /io/scripts/repair-wheels.sh
+          mkdir -p try_install
+          cd try_install
+          virtualenv venv
+          venv/bin/pip install ../dist/magic_filter-*.whl
+          venv/bin/python -c "import magic_filter; print(magic_filter.__version__)"
 
-      - name: Publish compiled artifacts
+      - name: Publish artifacts
         uses: actions/upload-artifact@v2
         with:
           name: wheels
-          path: dist/*.whl
-
-      - name: Build sdist
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
-        env:
-          SKIP_CYTHON: 1
-        run: |
-          rm -rf dist
-          poetry build --format sdist
-
-      - name: Publish builded artifacts
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: wheels
-          path: dist/*.tar.gz
+          path: dist/*
 
   publish:
     name: Publish
@@ -85,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     # TODO: Check tags
     steps:
-      - name: Download wheels
+      - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
           name: wheels

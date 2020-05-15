@@ -6,6 +6,6 @@ from .in_ import InOperation
 class AllFuncOperation(InOperation):
     def resolve(self, value: Any) -> bool:
         for item in self.value:
-            if item(value):
+            if not item(value):
                 return False
         return True
