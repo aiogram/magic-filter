@@ -2,8 +2,6 @@ from typing import Any, Callable, Iterable, List, Optional, Pattern, Union
 
 from .attribute import Attribute, resolve_attribute
 from .operations import (
-    AllFuncOperation,
-    AnyFuncOperation,
     AttrOperation,
     ContainsOperation,
     EqualsOperation,
@@ -72,18 +70,6 @@ class MagicFilter:
         Execute any callable on value
         """
         return FuncOperation(value=value, chain=self._chain)
-
-    def all(self, *call: Callable[[Any], bool]) -> AllFuncOperation:
-        """
-        Analog of builtin all(Iterable[Any])
-        """
-        return AllFuncOperation(value=call, chain=self._chain)
-
-    def any(self, *call: Callable[[Any], bool]) -> AnyFuncOperation:
-        """
-        Analog of builtin any(Iterable[Any])
-        """
-        return AnyFuncOperation(value=call, chain=self._chain)
 
     __slots__ = ("_chain",)
 
