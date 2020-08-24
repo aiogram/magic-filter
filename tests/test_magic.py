@@ -60,7 +60,12 @@ class TestMagicFilter:
         assert case(user)
 
     @pytest.mark.parametrize(
-        "case", [F.about.contains("Factory"), F.job.place__lower.contains("n")]
+        "case",
+        [
+            F.about.contains("Factory"),
+            F.job.place__lower.contains("n"),
+            F.job.place__upper.contains("N"),
+        ],
     )
     def test_contains(self, case, user: User):
         assert case(user)
