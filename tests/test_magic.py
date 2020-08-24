@@ -86,7 +86,7 @@ class TestMagicFilter:
     def test_unknown_modifiers(self, case, user: User):
         assert not case(user)
 
-    @pytest.mark.parametrize("case", [F.age__lower == "19", F.age__len == 2])
+    @pytest.mark.parametrize("case", [F.age__lower == "19", F.age__upper == "19", F.age__len == 2])
     def test_modifier_error(self, case, user: User):
         with pytest.raises(ValueError):
             assert case(user)
