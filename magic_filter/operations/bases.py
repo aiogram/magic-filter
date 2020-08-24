@@ -18,7 +18,7 @@ class BaseOperation(ABC):
         return OrOperation(value=self, other_value=other)
 
     @abstractmethod
-    def __call__(self, obj: Any) -> bool:
+    def __call__(self, obj: Any) -> bool:  # pragma: no cover
         pass
 
 

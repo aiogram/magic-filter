@@ -5,6 +5,8 @@ T = TypeVar("T", bound="Attribute")
 
 
 class Attribute:
+    __slots__ = ("name", "modifiers")
+
     name: str
     modifiers: Tuple[str, ...]
 
@@ -28,12 +30,16 @@ class Attribute:
         return value.casefold()
 
     @classmethod
+    def modifier_upper(cls, value: str) -> str:
+        if not isinstance(value, str):
+            raise ValueError(f"Value for modifier `upper` should be type 'str' not {type(value)}")
+        return value.upper()
+
+    @classmethod
     def modifier_len(cls, value: Sized) -> int:
         if not isinstance(value, Sized):
             raise ValueError("Value for modifier `len` should be sized")
         return len(value)
-
-    __slots__ = ("name", "modifiers")
 
 
 def _resolver(item: Any, attr: Attribute) -> Any:

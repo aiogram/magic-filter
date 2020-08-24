@@ -20,5 +20,5 @@ class SimpleOperation(BaseOperation, ABC):
         return self._resolve(value)
 
     @abstractmethod
-    def _resolve(self, value: Any) -> bool:
+    def _resolve(self, value: Any) -> bool:  # pragma: no cover
         pass
