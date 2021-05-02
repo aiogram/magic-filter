@@ -20,6 +20,7 @@ jobs:
           - 3.6
           - 3.7
           - 3.8
+          - 3.9
 
     steps:
       - uses: actions/checkout@master
@@ -64,10 +65,10 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Install dependencies
         run: |
@@ -85,7 +86,7 @@ jobs:
           cd try_install
           virtualenv venv
           venv/bin/pip install ../dist/magic_filter-*.whl
-          venv/bin/python -c "import magic_filter; print(magic_filter.__version__)"
+          venv/bin/python -c "import magic_filter; print(magic_filter)"
 
       - name: Publish artifacts
         uses: actions/upload-artifact@v2
