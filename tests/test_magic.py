@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import Any
 
 import pytest
 
@@ -22,82 +23,49 @@ class TestMagicFilter:
         "case",
         [
             F.age == 19,
-            F.about__lower == "gonna fly to the 'factory'",
+            F.about.lower() == "gonna fly to the 'factory'",
             F.job.place == "New York",
-            F.job.place__len == 8,
+            F.job.place.len() == 8,
             F.job.salary == 200_000,
-        ],
-    )
-    def test_equals(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize(
-        "case", [~(F.age == 42), F.age != 42, F.job.place != "Moscow", F.job.place__len != 5]
-    )
-    def test_not_equals(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize("case", [F.age, F.job, ~F.test])
-    def test_not_none(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize(
-        "case",
-        [
-            F.job.position__lower @ ("lead architect",),
-            F.age @ range(15, 40),
-            F.job.place.in_("New York", "WDC"),
-            F.age @ iter(range(30)),
-        ],
-    )
-    def test_operation_in_(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize(
-        "case", [F.about.regexp(r"Gonna .+"), F.about.regexp(r".+")],
-    )
-    def test_regexp(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize(
-        "case",
-        [
+            ~(F.age == 42),
+            F.age != 42,
+            F.job.place != "Hogwarts",
+            F.job.place.len() != 5,
+            F.job.salary > 100_000,
+            F.job.salary < 1_000_000,
+            F.job.salary >= 200_000,
+            F.job.salary <= 200_000,
+            F.age,
+            F.job,
+            ~F.test,
+            F.job.position.lower().in_(("lead architect",)),
+            F.age.in_(range(15, 40)),
+            F.job.place.in_({"New York", "WDC"}),
+            F.about.regexp(r"Gonna .+"),
+            F.about.regexp(r".+"),
             F.about.contains("Factory"),
-            F.job.place__lower.contains("n"),
-            F.job.place__upper.contains("N"),
-        ],
-    )
-    def test_contains(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize("case", [F.job.place.startswith("New")])
-    def test_startswith(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize("case", [F.job.position.endswith("architect")])
-    def test_endswith(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize("case", [F.age.func(lambda v: v in range(142))])
-    def test_func(self, case, user: User):
-        assert case(user)
-
-    @pytest.mark.parametrize("case", [F.job.place__test == "NEW YORK"])
-    def test_unknown_modifiers(self, case, user: User):
-        assert not case(user)
-
-    @pytest.mark.parametrize("case", [F.age__lower == "19", F.age__upper == "19", F.age__len == 2])
-    def test_modifier_error(self, case, user: User):
-        with pytest.raises(ValueError):
-            assert case(user)
-
-    @pytest.mark.parametrize(
-        "case",
-        [
+            F.job.place.lower().contains("n"),
+            F.job.place.upper().contains("N"),
+            F.job.place.startswith("New"),
+            F.job.position.endswith("architect"),
+            F.age.func(lambda v: v in range(142)),
             (F.age == 19) & (F.about.contains("Factory")),
             (F.age == 42) | (F.about.contains("Factory")),
             F.age & F.job & F.job.place,
+            F.about.len() == 26,
+            F.about[0] == "G",
+            F.about[0].lower() == "g",
+            F.about[:5] == "Gonna",
+            F.about[:5].lower() == "gonna",
+            F.about[Any].islower(),
+            ~F.about[...].isdigit(),
         ],
     )
-    def test_combined(self, case, user: User):
-        assert case(user)
+    def test_operations(self, case, user: User):
+        assert case.resolve(user)
+        assert F.ilter(case)(user)
+
+    @pytest.mark.parametrize("case", [F.about["test"], F.about[100]])
+    def test_invalid_get_item(self, case, user: User):
+        assert not case.resolve(user)
+        assert not F.ilter(case)(user)

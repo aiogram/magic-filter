@@ -1,27 +1,17 @@
-from .attr import AttrOperation
-from .bases import AndOperation, BaseOperation, NotOperation, OrOperation
-from .contains import ContainsOperation
-from .equals import EqualsOperation, NotEqualsOperation
-from .func import FuncOperation
-from .in_ import InOperation
-from .not_none import NotNoneOperation
-from .regexp import RegexpOperation
-from .simple import SimpleOperation
+from .base import BaseOperation
+from .call import CallOperation
+from .combination import CombinationOperation
+from .comparator import ComparatorOperation
+from .function import FunctionOperation
+from .getattr import GetAttributeOperation
+from .getitem import GetItemOperation
 
-__all__ = [
-    "AttrOperation",
-    "AndOperation",
+__all__ = (
     "BaseOperation",
-    "AndOperation",
-    "NotOperation",
-    "NotOperation",
-    "OrOperation",
-    "ContainsOperation",
-    "EqualsOperation",
-    "NotEqualsOperation",
-    "FuncOperation",
-    "InOperation",
-    "RegexpOperation",
-    "SimpleOperation",
-    "NotNoneOperation",
-]
+    "CombinationOperation",
+    "ComparatorOperation",
+    "FunctionOperation",
+    "GetAttributeOperation",
+    "GetItemOperation",
+    "CallOperation",
+)

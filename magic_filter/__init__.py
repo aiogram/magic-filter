@@ -1,6 +1,6 @@
 from . import operations
-from .magic import F, MagicFilter
+from .magic import MagicFilter
 
-__all__ = ["F", "MagicFilter", "operations"]
+__all__ = ("operations", "MagicFilter", "F")
 
-__version__ = "0.1.2"
+F = MagicFilter()

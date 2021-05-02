@@ -1,17 +1,19 @@
 [tool.poetry]
 name = "magic-filter"
-version = "0.1.2"
+version = "1.0.0-alpha.0"
 description = "This package provides magic filter based on dynamic attribute getter"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/aiogram/magic-filter/"
-authors = ["Alex Root Junior <jroot.junior@gmail.com>"]
+authors = ["Alex Root Junior <pypi@aiogram.dev>"]
 classifiers = [
 	"Development Status :: 3 - Alpha",
 	"License :: OSI Approved :: MIT License",
+	"Programming Language :: Python :: 3.6",
 	"Programming Language :: Python :: 3.7",
 	"Programming Language :: Python :: 3.8",
 	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
 	"Topic :: Utilities",
 	"Typing :: Typed",
 ]
@@ -23,16 +25,17 @@ keywords = [
 include = ["magic_filter/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.6.2"
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^2.4.0"
-pytest-cov = "^2.8.1"
-pytest = "^5.2"
-mypy = "^0.770"
-black = "^19.10b0"
-flake8 = "^3.8.1"
-isort = {extras = ["pyproject"], version = "^4.3.21"}
+pre-commit = "^2.12.1"
+pytest-cov = "^2.11.1"
+pytest = "^6.2.3"
+mypy = "^0.812"
+black = "^21.4b2"
+flake8 = "^3.9.1"
+isort = "^5.8.0"
+regex = "^2021.4.4"
 
 [tool.black]
 line-length = 99
