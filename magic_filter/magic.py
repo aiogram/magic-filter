@@ -43,9 +43,10 @@ class MagicFilter:
         for index, operation in enumerate(operations):
             try:
                 value = operation.resolve(value=value, initial_value=initial_value)
-            except SwitchModeToAll:
+            except SwitchModeToAll as e:
                 return all(
-                    self._resolve(value=item, operations=operations[index + 1 :]) for item in value
+                    self._resolve(value=item, operations=operations[index + 1 :])
+                    for item in value[e.key]
                 )
             except SwitchModeToAny:
                 return any(

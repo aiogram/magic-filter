@@ -57,8 +57,8 @@ class TestMagicFilter:
             F.about[0].lower() == "g",
             F.about[:5] == "Gonna",
             F.about[:5].lower() == "gonna",
-            F.about[Any].islower(),
-            ~F.about[...].isdigit(),
+            F.about[...].islower(),
+            ~F.about[:].isdigit(),
         ],
     )
     def test_operations(self, case, user: User):

@@ -1,5 +1,6 @@
 from typing import Any, Callable
 
+from .._crutches import resolve_if_needed
 from .base import BaseOperation
 
 
@@ -14,4 +15,4 @@ class ComparatorOperation(BaseOperation):
         self.comparator = comparator
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
-        return self.comparator(value, self.right)
+        return self.comparator(value, resolve_if_needed(self.right, initial_value=initial_value))

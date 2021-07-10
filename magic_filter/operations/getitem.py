@@ -4,6 +4,8 @@ from magic_filter.exceptions import SwitchModeToAll, SwitchModeToAny
 
 from .base import BaseOperation
 
+EMPTY_SLICE = slice(None, None, None)
+
 
 class GetItemOperation(BaseOperation):
     __slots__ = ("key",)
@@ -13,10 +15,10 @@ class GetItemOperation(BaseOperation):
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
         if isinstance(value, Iterable):
-            if self.key is Any:
-                raise SwitchModeToAny()
             if self.key is ...:
-                raise SwitchModeToAll()
+                raise SwitchModeToAny()
+            if self.key == EMPTY_SLICE:
+                raise SwitchModeToAll(self.key)
         try:
             return value[self.key]
         except (KeyError, IndexError, TypeError):

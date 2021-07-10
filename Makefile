@@ -56,7 +56,15 @@ mypy:
 mypy-report:
 	$(py) mypy $(package_dir) --html-report $(reports_dir)/typechecking
 
-lint: isort black flake8 mypy
+lint:
+	$(py) isort --check-only $(code_dir)
+	$(py) black --check --diff $(code_dir)
+	$(py) flake8 $(code_dir)
+	$(py) mypy $(package_dir)
+
+reformat:
+	$(py) isort $(code_dir)
+	$(py) black $(code_dir)
 
 # =================================================================================================
 # Tests

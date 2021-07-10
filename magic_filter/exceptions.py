@@ -3,7 +3,8 @@ class SwitchMode(Exception):
 
 
 class SwitchModeToAll(SwitchMode):
-    pass
+    def __init__(self, key: slice) -> None:
+        self.key = key
 
 
 class SwitchModeToAny(SwitchMode):
