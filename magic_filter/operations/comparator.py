@@ -1,6 +1,6 @@
 from typing import Any, Callable
 
-from .._crutches import resolve_if_needed
+from ..helper import resolve_if_needed
 from .base import BaseOperation
 
 
