@@ -45,8 +45,7 @@ class MagicFilter:
                 value = operation.resolve(value=value, initial_value=initial_value)
             except SwitchModeToAll as e:
                 return all(
-                    self._resolve(value=item, operations=operations[index + 1 :])
-                    for item in value[e.key]
+                    self._resolve(value=item, operations=operations[index + 1 :]) for item in value
                 )
             except SwitchModeToAny:
                 return any(
