@@ -1,12 +1,32 @@
 from collections import namedtuple
-from typing import Any
+from typing import Any, NamedTuple
 
 import pytest
 
-from magic_filter import F
+from magic_filter import F, MagicFilter
 
-User = namedtuple("User", ["age", "about", "job"])
 Job = namedtuple("Job", ["place", "salary", "position"])
+
+
+class User(NamedTuple):
+    age: int
+    about: str
+    job: Job
+
+    def __matmul__(self, other: Any) -> int:  # for testing
+        if isinstance(other, Job):
+            return self.job.place == other.place  # User (at) Job
+        return NotImplemented
+
+    def resolve(self) -> int:
+        return str(self)
+
+
+another_user = User(
+    age=18,
+    about="18 y.o. junior dev from NY",
+    job=Job(place="New York", salary=200_000, position="junior developer"),
+)
 
 
 @pytest.fixture(name="user")
@@ -38,6 +58,25 @@ class TestMagicFilter:
             F.age,
             F.job,
             ~F.test,
+            F.age == F.age,
+            F.age + 1 == 20,
+            5 + F.age - 1 == 42 - F.age,
+            19 // F.age == F.age // 19,
+            F.job.salary / F.job.salary == 1 * F.age * (1 / F.age),
+            F.job.salary % 100 == 0,
+            23 % F.age != 0,
+            -F.job.salary == -(+F.job.salary),
+            1 ** F.age == F.age * (F.age ** -1),
+            F.age >> 2 == 1 << (F.job.salary // 100_000),
+            (F.age << 2) // 38 == 1_048_576 >> F.age,
+            F.age & 16 == 16 & F.age,
+            F.age | 4 == 4 | F.age,
+            11 ^ F.age == F.age ^ 11,
+            F @ F.job,
+            another_user @ F.job,
+            F.job.is_not(None),
+            F.is_(F),
+            F.attr_("resolve")().contains("User"),
             F.job.position.lower().in_(("lead architect",)),
             F.age.in_(range(15, 40)),
             F.job.place.in_({"New York", "WDC"}),
@@ -57,15 +96,17 @@ class TestMagicFilter:
             F.about[0].lower() == "g",
             F.about[:5] == "Gonna",
             F.about[:5].lower() == "gonna",
+            F.about[:5:2].lower() == "gna",
+            F.about[6:9] == "fly",
             F.about[...].islower(),
             ~F.about[:].isdigit(),
         ],
     )
-    def test_operations(self, case, user: User):
+    def test_operations(self, case: MagicFilter, user: User):
         assert case.resolve(user)
         assert F.ilter(case)(user)
 
     @pytest.mark.parametrize("case", [F.about["test"], F.about[100]])
-    def test_invalid_get_item(self, case, user: User):
+    def test_invalid_get_item(self, case: MagicFilter, user: User):
         assert not case.resolve(user)
         assert not F.ilter(case)(user)

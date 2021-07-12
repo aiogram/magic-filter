@@ -12,6 +12,7 @@ from magic_filter.operations import (
     FunctionOperation,
     GetAttributeOperation,
     GetItemOperation,
+    RCombinationOperation,
 )
 
 
@@ -43,7 +44,7 @@ class MagicFilter:
         for index, operation in enumerate(operations):
             try:
                 value = operation.resolve(value=value, initial_value=initial_value)
-            except SwitchModeToAll as e:
+            except SwitchModeToAll:
                 return all(
                     self._resolve(value=item, operations=operations[index + 1 :]) for item in value
                 )
@@ -64,22 +65,22 @@ class MagicFilter:
     def __getitem__(self, item: Any) -> "MagicFilter":
         return self._extend(GetItemOperation(key=item))
 
-    def __eq__(self, other: "MagicFilter") -> "MagicFilter":  # type: ignore
+    def __eq__(self, other: Any) -> "MagicFilter":  # type: ignore
         return self._extend(ComparatorOperation(right=other, comparator=operator.eq))
 
-    def __ne__(self, other: "MagicFilter") -> "MagicFilter":  # type: ignore
+    def __ne__(self, other: Any) -> "MagicFilter":  # type: ignore
         return self._extend(ComparatorOperation(right=other, comparator=operator.ne))
 
-    def __lt__(self, other: "MagicFilter") -> "MagicFilter":
+    def __lt__(self, other: Any) -> "MagicFilter":
         return self._extend(ComparatorOperation(right=other, comparator=operator.lt))
 
-    def __gt__(self, other: "MagicFilter") -> "MagicFilter":
+    def __gt__(self, other: Any) -> "MagicFilter":
         return self._extend(ComparatorOperation(right=other, comparator=operator.gt))
 
-    def __le__(self, other: "MagicFilter") -> "MagicFilter":
+    def __le__(self, other: Any) -> "MagicFilter":
         return self._extend(ComparatorOperation(right=other, comparator=operator.le))
 
-    def __ge__(self, other: "MagicFilter") -> "MagicFilter":
+    def __ge__(self, other: Any) -> "MagicFilter":
         return self._extend(ComparatorOperation(right=other, comparator=operator.ge))
 
     def __invert__(self) -> "MagicFilter":
@@ -88,16 +89,104 @@ class MagicFilter:
     def __call__(self, *args: Any, **kwargs: Any) -> "MagicFilter":
         return self._extend(CallOperation(args=args, kwargs=kwargs))
 
-    def __and__(self, other: "MagicFilter") -> "MagicFilter":
-        return self._extend(CombinationOperation.and_op(right=other))
+    def __and__(self, other: Any) -> "MagicFilter":
+        if isinstance(other, MagicFilter):
+            return self._extend(CombinationOperation.and_op(right=other))
+        return self._extend(CombinationOperation(right=other, combinator=operator.and_))
 
-    def __or__(self, other: "MagicFilter") -> "MagicFilter":
-        return self._extend(CombinationOperation.or_op(right=other))
+    def __rand__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.and_))
+
+    def __or__(self, other: Any) -> "MagicFilter":
+        if isinstance(other, MagicFilter):
+            return self._extend(CombinationOperation.or_op(right=other))
+        return self._extend(CombinationOperation(right=other, combinator=operator.or_))
+
+    def __ror__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.or_))
+
+    def __xor__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.xor))
+
+    def __rxor__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.xor))
+
+    def __rshift__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.rshift))
+
+    def __rrshift__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.rshift))
+
+    def __lshift__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.lshift))
+
+    def __rlshift__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.lshift))
+
+    def __add__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.add))
+
+    def __radd__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.add))
+
+    def __sub__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.sub))
+
+    def __rsub__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.sub))
+
+    def __mul__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.mul))
+
+    def __rmul__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.mul))
+
+    def __truediv__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.truediv))
+
+    def __rtruediv__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.truediv))
+
+    def __floordiv__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.floordiv))
+
+    def __rfloordiv__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.floordiv))
+
+    def __mod__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.mod))
+
+    def __rmod__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.mod))
+
+    def __matmul__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.matmul))
+
+    def __rmatmul__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.matmul))
+
+    def __pow__(self, other: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=other, combinator=operator.pow))
+
+    def __rpow__(self, other: Any) -> "MagicFilter":
+        return self._extend(RCombinationOperation(left=other, combinator=operator.pow))
+
+    def __pos__(self) -> "MagicFilter":
+        return self._extend(FunctionOperation(function=operator.pos))
+
+    def __neg__(self) -> "MagicFilter":
+        return self._extend(FunctionOperation(function=operator.neg))
+
+    def is_(self, value: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=value, combinator=operator.is_))
+
+    def is_not(self, value: Any) -> "MagicFilter":
+        return self._extend(CombinationOperation(right=value, combinator=operator.is_not))
 
     def in_(self, iterable: Sequence[Any]) -> "MagicFilter":
         return self._extend(FunctionOperation.in_op(iterable))
 
-    def contains(self, value: Sequence[Any]) -> "MagicFilter":
+    def contains(self, value: Any) -> "MagicFilter":
         return self._extend(FunctionOperation.contains_op(value))
 
     def len(self) -> "MagicFilter":
