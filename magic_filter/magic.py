@@ -3,7 +3,7 @@ import re
 from functools import wraps
 from typing import Any, Callable, Optional, Pattern, Sequence, Tuple, Union
 
-from magic_filter.exceptions import SwitchModeToAll, SwitchModeToAny
+from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
 from magic_filter.operations import (
     BaseOperation,
     CallOperation,
@@ -14,6 +14,7 @@ from magic_filter.operations import (
     GetItemOperation,
     RCombinationOperation,
 )
+from magic_filter.operations.function import ImportantFunctionOperation
 
 
 class MagicFilter:
@@ -37,11 +38,20 @@ class MagicFilter:
     def _extend(self, operation: BaseOperation) -> "MagicFilter":
         return self._new(self._operations + (operation,))
 
+    def _replace_last(self, operation: BaseOperation) -> "MagicFilter":
+        return self._new(self._operations[:-1] + (operation,))
+
+    def _exclude_last(self) -> "MagicFilter":
+        return self._new(self._operations[:-1])
+
     def _resolve(self, value: Any, operations: Optional[Tuple[BaseOperation, ...]] = None) -> Any:
         initial_value = value
         if operations is None:
             operations = self._operations
+        rejected = False
         for index, operation in enumerate(operations):
+            if rejected and not operation.important:
+                continue
             try:
                 value = operation.resolve(value=value, initial_value=initial_value)
             except SwitchModeToAll:
@@ -52,6 +62,11 @@ class MagicFilter:
                 return any(
                     self._resolve(value=item, operations=operations[index + 1 :]) for item in value
                 )
+            except RejectOperations:
+                rejected = True
+                value = None
+                continue
+            rejected = False
         return value
 
     def resolve(self, value: Any) -> Any:
@@ -84,7 +99,13 @@ class MagicFilter:
         return self._extend(ComparatorOperation(right=other, comparator=operator.ge))
 
     def __invert__(self) -> "MagicFilter":
-        return self._extend(FunctionOperation(function=operator.not_))
+        if (
+            self._operations
+            and isinstance(self._operations[-1], ImportantFunctionOperation)
+            and self._operations[-1].function == operator.not_
+        ):
+            return self._exclude_last()
+        return self._extend(ImportantFunctionOperation(function=operator.not_))
 
     def __call__(self, *args: Any, **kwargs: Any) -> "MagicFilter":
         return self._extend(CallOperation(args=args, kwargs=kwargs))

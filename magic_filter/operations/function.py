@@ -22,6 +22,10 @@ class FunctionOperation(BaseOperation):
         return cls(function=partial(contains_op, a))
 
 
+class ImportantFunctionOperation(FunctionOperation):
+    important = True
+
+
 def in_op(a: Any, b: Any) -> bool:
     return b in a
 

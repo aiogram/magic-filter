@@ -1,6 +1,6 @@
 from typing import Any, Iterable
 
-from magic_filter.exceptions import SwitchModeToAll, SwitchModeToAny
+from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
 
 from .base import BaseOperation
 
@@ -21,5 +21,5 @@ class GetItemOperation(BaseOperation):
                 raise SwitchModeToAll(self.key)
         try:
             return value[self.key]
-        except (KeyError, IndexError, TypeError):
-            return None
+        except (KeyError, IndexError, TypeError) as e:
+            raise RejectOperations(e) from e
