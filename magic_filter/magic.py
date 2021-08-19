@@ -41,6 +41,9 @@ class MagicFilter:
     def _replace_last(self, operation: BaseOperation) -> "MagicFilter":
         return self._new(self._operations[:-1] + (operation,))
 
+    def _exclude_last(self) -> "MagicFilter":
+        return self._new(self._operations[:-1])
+
     def _resolve(self, value: Any, operations: Optional[Tuple[BaseOperation, ...]] = None) -> Any:
         initial_value = value
         if operations is None:
@@ -101,7 +104,7 @@ class MagicFilter:
             and isinstance(self._operations[-1], ImportantFunctionOperation)
             and self._operations[-1].function == operator.not_
         ):
-            return self._exсlude_last()
+            return self._exclude_last()
         return self._extend(ImportantFunctionOperation(function=operator.not_))
 
     def __call__(self, *args: Any, **kwargs: Any) -> "MagicFilter":
