@@ -51,6 +51,7 @@ class TestMagicFilter:
             F.job.place.len() == 8,
             F.job.salary == 200_000,
             ~(F.age == 42),
+            ~(~(F.age != 42)),
             F.age != 42,
             F.job.place != "Hogwarts",
             F.job.place.len() != 5,
@@ -115,7 +116,7 @@ class TestMagicFilter:
 
     @pytest.mark.parametrize(
         "value,a,b",
-        [[None, None, None], ["spam", False, True], ["321", True, False], [42, None, None]],
+        [[None, None, True], ["spam", False, True], ["321", True, False], [42, None, True]],
     )
     def test_reject_has_no_attribute(self, value: Any, a: bool, b: bool):
         user = User(
@@ -129,3 +130,13 @@ class TestMagicFilter:
 
         assert regular.resolve(user) is a
         assert inverted.resolve(user) is b
+
+    def test_exclude_mutually_exclusive_inversions(self, user: User):
+        case = F.job
+        assert len(case._operations) == 1
+        case = ~case
+        assert len(case._operations) == 2
+        case = ~case
+        assert len(case._operations) == 1
+        case = ~case
+        assert len(case._operations) == 2

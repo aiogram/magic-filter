@@ -38,6 +38,9 @@ class MagicFilter:
     def _extend(self, operation: BaseOperation) -> "MagicFilter":
         return self._new(self._operations + (operation,))
 
+    def _replace_last(self, operation: BaseOperation) -> "MagicFilter":
+        return self._new(self._operations[:-1] + (operation,))
+
     def _resolve(self, value: Any, operations: Optional[Tuple[BaseOperation, ...]] = None) -> Any:
         initial_value = value
         if operations is None:
@@ -93,7 +96,13 @@ class MagicFilter:
         return self._extend(ComparatorOperation(right=other, comparator=operator.ge))
 
     def __invert__(self) -> "MagicFilter":
-        return self._extend(FunctionOperation(function=operator.not_))
+        if (
+            self._operations
+            and isinstance(self._operations[-1], ImportantFunctionOperation)
+            and self._operations[-1].function == operator.not_
+        ):
+            return self._exсlude_last()
+        return self._extend(ImportantFunctionOperation(function=operator.not_))
 
     def __call__(self, *args: Any, **kwargs: Any) -> "MagicFilter":
         return self._extend(CallOperation(args=args, kwargs=kwargs))
@@ -184,7 +193,7 @@ class MagicFilter:
         return self._extend(FunctionOperation(function=operator.pos))
 
     def __neg__(self) -> "MagicFilter":
-        return self._extend(ImportantFunctionOperation(function=operator.neg))
+        return self._extend(FunctionOperation(function=operator.neg))
 
     def is_(self, value: Any) -> "MagicFilter":
         return self._extend(CombinationOperation(right=value, combinator=operator.is_))
