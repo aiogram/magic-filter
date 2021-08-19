@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Any
 
+from ..exceptions import RejectOperations
 from .base import BaseOperation
 
 
@@ -13,5 +14,5 @@ class GetAttributeOperation(BaseOperation, ABC):
     def resolve(self, value: Any, initial_value: Any) -> Any:
         try:
             return getattr(value, self.name)
-        except AttributeError:
-            return None
+        except AttributeError as e:
+            raise RejectOperations(e) from e

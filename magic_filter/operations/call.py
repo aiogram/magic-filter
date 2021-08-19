@@ -1,5 +1,6 @@
 from typing import Any, Dict, Tuple
 
+from ..exceptions import RejectOperations
 from .base import BaseOperation
 
 
@@ -11,4 +12,6 @@ class CallOperation(BaseOperation):
         self.kwargs = kwargs
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
+        if not callable(value):
+            raise RejectOperations(TypeError(f"{value} is not callable"))
         return value(*self.args, **self.kwargs)

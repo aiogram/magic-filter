@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, Optional
 
 import pytest
 
@@ -12,6 +12,7 @@ class User(NamedTuple):
     age: int
     about: str
     job: Job
+    favorite_digits: Optional[str]
 
     def __matmul__(self, other: Any) -> int:  # for testing
         if isinstance(other, Job):
@@ -26,6 +27,7 @@ another_user = User(
     age=18,
     about="18 y.o. junior dev from NY",
     job=Job(place="New York", salary=200_000, position="junior developer"),
+    favorite_digits="test",
 )
 
 
@@ -35,6 +37,7 @@ def user():
         age=19,
         about="Gonna fly to the 'Factory'",
         job=Job(place="New York", salary=200_000, position="lead architect"),
+        favorite_digits="",
     )
 
 
@@ -57,7 +60,6 @@ class TestMagicFilter:
             F.job.salary <= 200_000,
             F.age,
             F.job,
-            ~F.test,
             F.age == F.age,
             F.age + 1 == 20,
             5 + F.age - 1 == 42 - F.age,
@@ -110,3 +112,20 @@ class TestMagicFilter:
     def test_invalid_get_item(self, case: MagicFilter, user: User):
         assert not case.resolve(user)
         assert not F.ilter(case)(user)
+
+    @pytest.mark.parametrize(
+        "value,a,b",
+        [[None, None, None], ["spam", False, True], ["321", True, False], [42, None, None]],
+    )
+    def test_reject_has_no_attribute(self, value: Any, a: bool, b: bool):
+        user = User(
+            age=42,
+            about="Developer",
+            job=Job(position="senior-tomato", place="Italy", salary=300_000),
+            favorite_digits=value,
+        )
+        regular = F.favorite_digits.isdigit()
+        inverted = ~regular
+
+        assert regular.resolve(user) is a
+        assert inverted.resolve(user) is b

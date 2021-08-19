@@ -3,7 +3,7 @@ import re
 from functools import wraps
 from typing import Any, Callable, Optional, Pattern, Sequence, Tuple, Union
 
-from magic_filter.exceptions import SwitchModeToAll, SwitchModeToAny
+from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
 from magic_filter.operations import (
     BaseOperation,
     CallOperation,
@@ -14,6 +14,7 @@ from magic_filter.operations import (
     GetItemOperation,
     RCombinationOperation,
 )
+from magic_filter.operations.function import ImportantFunctionOperation
 
 
 class MagicFilter:
@@ -41,7 +42,10 @@ class MagicFilter:
         initial_value = value
         if operations is None:
             operations = self._operations
+        rejected = False
         for index, operation in enumerate(operations):
+            if rejected and not operation.important:
+                continue
             try:
                 value = operation.resolve(value=value, initial_value=initial_value)
             except SwitchModeToAll:
@@ -52,6 +56,11 @@ class MagicFilter:
                 return any(
                     self._resolve(value=item, operations=operations[index + 1 :]) for item in value
                 )
+            except RejectOperations:
+                rejected = True
+                value = None
+                continue
+            rejected = False
         return value
 
     def resolve(self, value: Any) -> Any:
@@ -175,7 +184,7 @@ class MagicFilter:
         return self._extend(FunctionOperation(function=operator.pos))
 
     def __neg__(self) -> "MagicFilter":
-        return self._extend(FunctionOperation(function=operator.neg))
+        return self._extend(ImportantFunctionOperation(function=operator.neg))
 
     def is_(self, value: Any) -> "MagicFilter":
         return self._extend(CombinationOperation(right=value, combinator=operator.is_))

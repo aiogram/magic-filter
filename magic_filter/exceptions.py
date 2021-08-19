@@ -1,4 +1,8 @@
-class SwitchMode(Exception):
+class MagicFilterException(Exception):
+    pass
+
+
+class SwitchMode(MagicFilterException):
     pass
 
 
@@ -8,4 +12,8 @@ class SwitchModeToAll(SwitchMode):
 
 
 class SwitchModeToAny(SwitchMode):
+    pass
+
+
+class RejectOperations(MagicFilterException):
     pass
