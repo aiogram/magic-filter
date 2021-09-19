@@ -27,8 +27,14 @@ class ImportantFunctionOperation(FunctionOperation):
 
 
 def in_op(a: Any, b: Any) -> bool:
-    return b in a
+    try:
+        return b in a
+    except TypeError:
+        return False
 
 
 def contains_op(a: Any, b: Any) -> bool:
-    return a in b
+    try:
+        return a in b
+    except TypeError:
+        return False

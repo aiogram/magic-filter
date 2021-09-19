@@ -103,6 +103,7 @@ class TestMagicFilter:
             F.about[6:9] == "fly",
             F.about[...].islower(),
             ~F.about[:].isdigit(),
+            ~F.job.contains("test"),
         ],
     )
     def test_operations(self, case: MagicFilter, user: User):
