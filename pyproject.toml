@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "magic-filter"
-version = "1.0.2"
+version = "1.0.3"
 description = "This package provides magic filter based on dynamic attribute getter"
 license = "MIT"
 readme = "README.md"
