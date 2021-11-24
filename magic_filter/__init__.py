@@ -1,7 +1,13 @@
 from . import operations
 from .attrdict import AttrDict
-from .magic import MagicFilter
+from .magic import MagicFilter, MagicT
 
-__all__ = ("operations", "MagicFilter", "F", "AttrDict")
+__all__ = (
+    "operations",
+    "MagicFilter",
+    "MagicT",
+    "F",
+    "AttrDict",
+)
 
 F = MagicFilter()
