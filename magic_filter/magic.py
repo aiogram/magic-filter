@@ -14,6 +14,7 @@ from magic_filter.operations import (
     GetItemOperation,
     RCombinationOperation,
 )
+from magic_filter.operations.combination import ImportantCombinationOperation
 from magic_filter.operations.function import ImportantFunctionOperation
 
 MagicT = TypeVar("MagicT", bound="MagicFilter")
@@ -122,8 +123,8 @@ class MagicFilter:
 
     def __or__(self: MagicT, other: Any) -> MagicT:
         if isinstance(other, MagicFilter):
-            return self._extend(CombinationOperation.or_op(right=other))
-        return self._extend(CombinationOperation(right=other, combinator=operator.or_))
+            return self._extend(ImportantCombinationOperation.or_op(right=other))
+        return self._extend(ImportantCombinationOperation(right=other, combinator=operator.or_))
 
     def __ror__(self: MagicT, other: Any) -> MagicT:
         return self._extend(RCombinationOperation(left=other, combinator=operator.or_))

@@ -1,6 +1,7 @@
 from functools import partial
 from typing import Any, Callable
 
+from ..exceptions import RejectOperations
 from .base import BaseOperation
 
 
@@ -11,7 +12,10 @@ class FunctionOperation(BaseOperation):
         self.function = function
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
-        return self.function(value)
+        try:
+            return self.function(value)
+        except (TypeError, ValueError) as e:
+            raise RejectOperations(e) from e
 
     @classmethod
     def in_op(cls, a: Any) -> "FunctionOperation":

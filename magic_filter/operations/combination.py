@@ -29,6 +29,10 @@ class CombinationOperation(BaseOperation):
         return cls(right=right, combinator=or_op)
 
 
+class ImportantCombinationOperation(CombinationOperation):
+    important = True
+
+
 class RCombinationOperation(BaseOperation):
     __slots__ = (
         "left",

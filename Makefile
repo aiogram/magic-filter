@@ -71,11 +71,11 @@ reformat:
 # =================================================================================================
 
 test:
-	$(py) pytest --cov=magic-filter --cov-config .coveragerc tests/
+	$(py) pytest --cov=magic_filter --cov-config .coveragerc tests/
 
 test-coverage:
 	mkdir -p $(reports_dir)/tests/
-	$(py) pytest --cov=magic-filter --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
+	$(py) pytest --cov=magic_filter --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
 	$(py) coverage html -d $(reports_dir)/coverage
 
 test-coverage-report:
