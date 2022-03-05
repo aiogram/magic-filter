@@ -2,7 +2,7 @@ from .base import BaseOperation
 from .call import CallOperation
 from .combination import CombinationOperation, RCombinationOperation
 from .comparator import ComparatorOperation
-from .function import FunctionOperation
+from .function import FunctionOperation, ImportantFunctionOperation
 from .getattr import GetAttributeOperation
 from .getitem import GetItemOperation
 
@@ -12,6 +12,7 @@ __all__ = (
     "CombinationOperation",
     "ComparatorOperation",
     "FunctionOperation",
+    "ImportantFunctionOperation",
     "GetAttributeOperation",
     "GetItemOperation",
     "RCombinationOperation",

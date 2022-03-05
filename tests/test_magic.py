@@ -69,7 +69,7 @@ class TestMagicFilter:
             F.job.salary % 100 == 0,
             23 % F.age != 0,
             -F.job.salary == -(+F.job.salary),
-            1 ** F.age == F.age * (F.age ** -1),
+            1**F.age == F.age * (F.age**-1),
             F.age >> 2 == 1 << (F.job.salary // 100_000),
             (F.age << 2) // 38 == 1_048_576 >> F.age,
             F.age & 16 == 16 & F.age,

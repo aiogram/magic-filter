@@ -12,10 +12,11 @@ from magic_filter.operations import (
     FunctionOperation,
     GetAttributeOperation,
     GetItemOperation,
+    ImportantFunctionOperation,
     RCombinationOperation,
 )
 from magic_filter.operations.combination import ImportantCombinationOperation
-from magic_filter.operations.function import ImportantFunctionOperation
+from magic_filter.util import and_op, contains_op, in_op, or_op
 
 MagicT = TypeVar("MagicT", bound="MagicFilter")
 
@@ -76,6 +77,8 @@ class MagicFilter:
         return self._resolve(value=value)
 
     def __getattr__(self: MagicT, item: Any) -> MagicT:
+        if item.startswith("_"):
+            raise AttributeError(f"{type(self).__name__!r} object has no attribute {item!r}")
         return self._extend(GetAttributeOperation(name=item))
 
     attr_ = __getattr__
@@ -115,7 +118,7 @@ class MagicFilter:
 
     def __and__(self: MagicT, other: Any) -> MagicT:
         if isinstance(other, MagicFilter):
-            return self._extend(CombinationOperation.and_op(right=other))
+            return self._extend(CombinationOperation(right=other, combinator=and_op))
         return self._extend(CombinationOperation(right=other, combinator=operator.and_))
 
     def __rand__(self: MagicT, other: Any) -> MagicT:
@@ -123,7 +126,7 @@ class MagicFilter:
 
     def __or__(self: MagicT, other: Any) -> MagicT:
         if isinstance(other, MagicFilter):
-            return self._extend(ImportantCombinationOperation.or_op(right=other))
+            return self._extend(ImportantCombinationOperation(right=other, combinator=or_op))
         return self._extend(ImportantCombinationOperation(right=other, combinator=operator.or_))
 
     def __ror__(self: MagicT, other: Any) -> MagicT:
@@ -208,18 +211,19 @@ class MagicFilter:
         return self._extend(CombinationOperation(right=value, combinator=operator.is_not))
 
     def in_(self: MagicT, iterable: Sequence[Any]) -> MagicT:
-        return self._extend(FunctionOperation.in_op(iterable))
+        return self._extend(FunctionOperation(in_op, iterable))
 
     def contains(self: MagicT, value: Any) -> MagicT:
-        return self._extend(FunctionOperation.contains_op(value))
+        return self._extend(FunctionOperation(contains_op, value))
 
     def len(self: MagicT) -> MagicT:
         return self._extend(FunctionOperation(len))
 
-    def regexp(self: MagicT, pattern: Union[str, Pattern[str]]) -> MagicT:
+    def regexp(self: MagicT, pattern: Union[str, Pattern[str]], *, search: bool = False) -> MagicT:
         if isinstance(pattern, str):
             pattern = re.compile(pattern)
-        return self._extend(FunctionOperation(pattern.match))
+        regexp_mode = pattern.search if search else pattern.match
+        return self._extend(FunctionOperation(regexp_mode))
 
     def func(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
         return self._extend(FunctionOperation(func))
