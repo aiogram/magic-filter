@@ -1,14 +1,14 @@
-from typing import Any
+from typing import Any, Sequence, Set, Union
 
 
-def in_op(a: Any, b: Any) -> bool:
+def in_op(a: Union[Sequence[Any], Set[Any]], b: Any) -> bool:
     try:
         return b in a
     except TypeError:
         return False
 
 
-def contains_op(a: Any, b: Any) -> bool:
+def contains_op(a: Any, b: Union[Sequence[Any], Set[Any]]) -> bool:
     try:
         return a in b
     except TypeError:
