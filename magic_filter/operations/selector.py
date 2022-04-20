@@ -1,4 +1,4 @@
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from magic_filter.exceptions import RejectOperations
 from magic_filter.operations import BaseOperation
