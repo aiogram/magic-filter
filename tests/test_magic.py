@@ -101,9 +101,13 @@ class TestMagicFilter:
             F.about[:5].lower() == "gonna",
             F.about[:5:2].lower() == "gna",
             F.about[6:9] == "fly",
+            ~~F.about[6:9] == "fly",
             F.about[...].islower(),
             ~F.about[:].isdigit(),
             ~F.job.contains("test"),
+            F.job[F.salary > 100_000].place == "New York",
+            F.job[F.salary > 100_000][F.place == "New York"],
+            ~F.job[F.salary < 100_000],
         ],
     )
     def test_operations(self, case: MagicFilter, user: User):
