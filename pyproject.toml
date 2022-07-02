@@ -34,10 +34,11 @@ pre-commit = "^2.17.0"
 pytest-cov = "^3.0.0"
 pytest-html = "^3.1.1"
 pytest = "^7.0.1"
-mypy = "^0.931"
-black = "^22.1.0"
+mypy = "^0.961"
+black = "^22.6.0"
 flake8 = "^4.0.1"
 isort = "^5.10.1"
+types-setuptools = "^57.4.18"
 
 [tool.black]
 line-length = 99
