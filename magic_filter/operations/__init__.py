@@ -1,5 +1,6 @@
 from .base import BaseOperation
 from .call import CallOperation
+from .cast import CastOperation
 from .combination import CombinationOperation, RCombinationOperation
 from .comparator import ComparatorOperation
 from .function import FunctionOperation, ImportantFunctionOperation
@@ -11,6 +12,7 @@ __all__ = (
     "CallOperation",
     "CombinationOperation",
     "ComparatorOperation",
+    "CastOperation",
     "FunctionOperation",
     "ImportantFunctionOperation",
     "GetAttributeOperation",

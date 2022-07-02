@@ -7,6 +7,7 @@ from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchMod
 from magic_filter.operations import (
     BaseOperation,
     CallOperation,
+    CastOperation,
     CombinationOperation,
     ComparatorOperation,
     FunctionOperation,
@@ -230,3 +231,6 @@ class MagicFilter:
 
     def func(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
         return self._extend(FunctionOperation(func))
+
+    def cast(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
+        return self._extend(CastOperation(func))

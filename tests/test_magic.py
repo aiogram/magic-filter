@@ -108,6 +108,7 @@ class TestMagicFilter:
             F.job[F.salary > 100_000].place == "New York",
             F.job[F.salary > 100_000][F.place == "New York"],
             ~F.job[F.salary < 100_000],
+            (F.age.cast(str) + " years" == "19 years"),
         ],
     )
     def test_operations(self, case: MagicFilter, user: User):
