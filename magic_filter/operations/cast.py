@@ -7,7 +7,7 @@ from .base import BaseOperation
 class CastOperation(BaseOperation):
     __slots__ = ("func",)
 
-    def __init__(self, func: Callable[[...], Any]) -> None:
+    def __init__(self, func: Callable[[Any], Any]) -> None:
         self.func = func
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
