@@ -29,6 +29,10 @@ class MagicFilter:
     def __init__(self, operations: Tuple[BaseOperation, ...] = ()) -> None:
         self._operations = operations
 
+    # An instance of MagicFilter cannot be used as an iterable object because objects
+    # with a __getitem__ method can be endlessly iterated, which is not the desired behavior.
+    __iter__ = None
+
     @classmethod
     def ilter(cls, magic: "MagicFilter") -> Callable[[Any], Any]:
         @wraps(magic.resolve)
