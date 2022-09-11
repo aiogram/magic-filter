@@ -100,7 +100,7 @@ jobs:
         run: |
           mkdir -p try_install
           cd try_install
-          virtualenv venv
+          python -m venv venv
           venv/bin/pip install ../dist/magic_filter-*.whl
           venv/bin/python -c "import magic_filter; print(magic_filter)"
 
