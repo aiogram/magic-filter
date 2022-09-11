@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - '*'
-  pull_request: {}
+  pull_request: { }
 
 jobs:
   test:
@@ -23,10 +23,11 @@ jobs:
           - "3.10"
 
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout code
+        uses: actions/checkout@master
 
       - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -37,18 +38,36 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      - name: Lint
-        run: |
-          flake8 magic_filter
-          isort --check-only -df magic_filter
-          black --check --diff magic_filter
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.2.0
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
 
-      - name: mypy
-        run: mypy magic_filter
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}-${{ secrets.CACHE_VERSION }}
 
-      - name: Test
+      - name: Install project dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          pytest --cov=magic_filter --cov-config .coveragerc --cov-report=xml
+          poetry install
+
+      - name: Lint code
+        run: |
+          poetry run flake8 magic_filter
+          poetry run isort --check-only -df magic_filter
+          poetry run black --check --diff magic_filter
+          poetry run mypy magic_filter
+
+      - name: Run tests
+        run: |
+          poetry run pytest --cov=magic_filter --cov-config .coveragerc --cov-report=xml
 
       - uses: codecov/codecov-action@v1
         with:
@@ -63,18 +82,21 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout code
+        uses: actions/checkout@master
 
       - name: Set up Python 3.10
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.10
 
-      - name: Install dependencies
-        run: |
-          pip install -U pip virtualenv
-          pip install poetry
-          poetry config virtualenvs.create false
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.2.0
+          virtualenvs-create: false
+          virtualenvs-in-project: false
+          installer-parallel: true
 
       - name: Build
         run: |
