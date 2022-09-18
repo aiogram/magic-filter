@@ -13,11 +13,11 @@ from magic_filter.operations import (
     FunctionOperation,
     GetAttributeOperation,
     GetItemOperation,
+    ImportantCombinationOperation,
     ImportantFunctionOperation,
     RCombinationOperation,
+    SelectorOperation,
 )
-from magic_filter.operations.combination import ImportantCombinationOperation
-from magic_filter.operations.selector import SelectorOperation
 from magic_filter.util import and_op, contains_op, in_op, or_op
 
 MagicT = TypeVar("MagicT", bound="MagicFilter")
