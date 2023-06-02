@@ -8,9 +8,23 @@ def in_op(a: Union[Sequence[Any], Set[Any]], b: Any) -> bool:
         return False
 
 
+def not_in_op(a: Union[Sequence[Any], Set[Any]], b: Any) -> bool:
+    try:
+        return b not in a
+    except TypeError:
+        return False
+
+
 def contains_op(a: Any, b: Union[Sequence[Any], Set[Any]]) -> bool:
     try:
         return a in b
+    except TypeError:
+        return False
+
+
+def not_contains_op(a: Any, b: Union[Sequence[Any], Set[Any]]) -> bool:
+    try:
+        return a not in b
     except TypeError:
         return False
 

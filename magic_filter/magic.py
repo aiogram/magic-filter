@@ -18,7 +18,7 @@ from magic_filter.operations import (
     RCombinationOperation,
     SelectorOperation,
 )
-from magic_filter.util import and_op, contains_op, in_op, or_op
+from magic_filter.util import and_op, contains_op, in_op, not_contains_op, not_in_op, or_op
 
 MagicT = TypeVar("MagicT", bound="MagicFilter")
 
@@ -221,8 +221,14 @@ class MagicFilter:
     def in_(self: MagicT, iterable: Union[Sequence[Any], Set[Any]]) -> MagicT:
         return self._extend(FunctionOperation(in_op, iterable))
 
+    def not_in(self: MagicT, iterable: Union[Sequence[Any], Set[Any]]) -> MagicT:
+        return self._extend(FunctionOperation(not_in_op, iterable))
+
     def contains(self: MagicT, value: Any) -> MagicT:
         return self._extend(FunctionOperation(contains_op, value))
+
+    def not_contains(self: MagicT, value: Any) -> MagicT:
+        return self._extend(FunctionOperation(not_contains_op, value))
 
     def len(self: MagicT) -> MagicT:
         return self._extend(FunctionOperation(len))
