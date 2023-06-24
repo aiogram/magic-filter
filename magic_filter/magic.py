@@ -94,6 +94,11 @@ class MagicFilter:
             return self._extend(SelectorOperation(inner=item))
         return self._extend(GetItemOperation(key=item))
 
+    def __len__(self) -> int:
+        raise TypeError(
+            f"Length can't be taken using len() function. Use {type(self).__name__}.len() instead."
+        )
+
     def __eq__(self: MagicT, other: Any) -> MagicT:  # type: ignore
         return self._extend(ComparatorOperation(right=other, comparator=operator.eq))
 
