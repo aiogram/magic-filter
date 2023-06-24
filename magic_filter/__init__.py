@@ -1,4 +1,4 @@
-import pkg_resources
+from importlib.metadata import version
 
 from . import operations
 from .attrdict import AttrDict
@@ -13,6 +13,7 @@ __all__ = (
     "AttrDict",
 )
 
-__version__ = pkg_resources.get_distribution(__name__).version
+
+__version__ = version(__name__)
 
 F = MagicFilter()
