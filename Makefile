@@ -1,8 +1,6 @@
 .DEFAULT_GOAL := help
 
 base_python := python3
-py := poetry run
-python := $(py) python
 
 reports_dir := reports
 
@@ -38,33 +36,33 @@ clean:
 # =================================================================================================
 
 isort:
-	$(py) isort $(code_dir)
+	isort $(code_dir)
 
 black:
-	$(py) black $(code_dir)
+	nlack $(code_dir)
 
 flake8:
-	$(py) flake8 $(code_dir)
+	flake8 $(code_dir)
 
 flake8-report:
 	mkdir -p $(reports_dir)/flake8
-	$(py) flake8 --format=html --htmldir=$(reports_dir)/flake8 $(code_dir)
+	flake8 --format=html --htmldir=$(reports_dir)/flake8 $(code_dir)
 
 mypy:
-	$(py) mypy $(package_dir)
+	mypy $(package_dir)
 
 mypy-report:
-	$(py) mypy $(package_dir) --html-report $(reports_dir)/typechecking
+	mypy $(package_dir) --html-report $(reports_dir)/typechecking
 
 lint:
-	$(py) isort --check-only $(code_dir)
-	$(py) black --check --diff $(code_dir)
-	$(py) flake8 $(code_dir)
-	$(py) mypy $(package_dir)
+	isort --check-only $(code_dir)
+	black --check --diff $(code_dir)
+	flake8 $(code_dir)
+	mypy $(package_dir)
 
 reformat:
-	$(py) isort $(code_dir)
-	$(py) black $(code_dir)
+	isort $(code_dir)
+	black $(code_dir)
 
 # =================================================================================================
 # Tests
@@ -75,8 +73,8 @@ test:
 
 test-coverage:
 	mkdir -p $(reports_dir)/tests/
-	$(py) pytest --cov=magic_filter --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
-	$(py) coverage html -d $(reports_dir)/coverage
+	pytest --cov=magic_filter --cov-config .coveragerc --html=$(reports_dir)/tests/index.html tests/
+	coverage html -d $(reports_dir)/coverage
 
 test-coverage-report:
 	python -c "import webbrowser; webbrowser.open('file://$(shell pwd)/reports/coverage/index.html')"

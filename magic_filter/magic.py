@@ -65,13 +65,9 @@ class MagicFilter:
             try:
                 value = operation.resolve(value=value, initial_value=initial_value)
             except SwitchModeToAll:
-                return all(
-                    self._resolve(value=item, operations=operations[index + 1 :]) for item in value
-                )
+                return all(self._resolve(value=item, operations=operations[index + 1 :]) for item in value)
             except SwitchModeToAny:
-                return any(
-                    self._resolve(value=item, operations=operations[index + 1 :]) for item in value
-                )
+                return any(self._resolve(value=item, operations=operations[index + 1 :]) for item in value)
             except RejectOperations:
                 rejected = True
                 value = None
@@ -95,9 +91,7 @@ class MagicFilter:
         return self._extend(GetItemOperation(key=item))
 
     def __len__(self) -> int:
-        raise TypeError(
-            f"Length can't be taken using len() function. Use {type(self).__name__}.len() instead."
-        )
+        raise TypeError(f"Length can't be taken using len() function. Use {type(self).__name__}.len() instead.")
 
     def __eq__(self: MagicT, other: Any) -> MagicT:  # type: ignore
         return self._extend(ComparatorOperation(right=other, comparator=operator.eq))
