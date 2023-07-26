@@ -232,9 +232,15 @@ class MagicFilter:
     def len(self: MagicT) -> MagicT:
         return self._extend(FunctionOperation(len))
 
-    def regexp(self: MagicT, pattern: Union[str, Pattern[str]], *, search: bool = False) -> MagicT:
+    def regexp(
+        self: MagicT,
+        pattern: Union[str, Pattern[str]],
+        *,
+        search: bool = False,
+        flags: Union[int, re.RegexFlag] = 0,
+    ) -> MagicT:
         if isinstance(pattern, str):
-            pattern = re.compile(pattern)
+            pattern = re.compile(pattern, flags=flags)
         regexp_mode = pattern.search if search else pattern.match
         return self._extend(FunctionOperation(regexp_mode))
 
