@@ -3,6 +3,7 @@ from .call import CallOperation
 from .cast import CastOperation
 from .combination import CombinationOperation, ImportantCombinationOperation, RCombinationOperation
 from .comparator import ComparatorOperation
+from .extract import ExtractOperation
 from .function import FunctionOperation, ImportantFunctionOperation
 from .getattr import GetAttributeOperation
 from .getitem import GetItemOperation
@@ -21,4 +22,5 @@ __all__ = (
     "ImportantFunctionOperation",
     "RCombinationOperation",
     "SelectorOperation",
+    "ExtractOperation",
 )

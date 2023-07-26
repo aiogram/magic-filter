@@ -17,6 +17,7 @@ from magic_filter.operations import (
     ImportantFunctionOperation,
     RCombinationOperation,
     SelectorOperation,
+    ExtractOperation,
 )
 from magic_filter.util import and_op, contains_op, in_op, not_contains_op, not_in_op, or_op
 
@@ -249,3 +250,6 @@ class MagicFilter:
 
     def cast(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
         return self._extend(CastOperation(func))
+
+    def extract(self: MagicT, magic: "MagicT") -> MagicT:
+        return self._extend(ExtractOperation(magic))

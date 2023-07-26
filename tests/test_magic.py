@@ -93,6 +93,7 @@ class TestMagicFilter:
             F.job.place.startswith("New"),
             F.job.position.endswith("architect"),
             F.age.func(lambda v: v in range(142)),
+            F.job.place.func(str.split, maxsplit=1)[0] == "New",
             (F.age == 19) & (F.about.contains("Factory")),
             (F.age == 42) | (F.about.contains("Factory")),
             F.age & F.job & F.job.place,
@@ -148,3 +149,9 @@ class TestMagicFilter:
         assert len(case._operations) == 1
         case = ~case
         assert len(case._operations) == 2
+
+    def test_extract_operation(self):
+        case = F.extract(F > 2)
+        assert case.resolve(range(5)) == [3, 4]
+
+        assert not case.resolve(42)
