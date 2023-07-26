@@ -1,4 +1,4 @@
-from typing import Any, Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Iterable
 
 from magic_filter.operations import BaseOperation
 

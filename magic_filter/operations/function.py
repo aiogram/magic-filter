@@ -1,8 +1,8 @@
 from typing import Any, Callable
 
-from .base import BaseOperation
 from ..exceptions import RejectOperations
 from ..helper import resolve_if_needed
+from .base import BaseOperation
 
 
 class FunctionOperation(BaseOperation):
