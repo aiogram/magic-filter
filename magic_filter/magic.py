@@ -76,6 +76,9 @@ class MagicFilter:
             rejected = False
         return value
 
+    def __bool__(self) -> bool:
+        return True
+
     def resolve(self: MagicT, value: Any) -> Any:
         return self._resolve(value=value)
 

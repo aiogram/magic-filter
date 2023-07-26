@@ -155,3 +155,7 @@ class TestMagicFilter:
         assert case.resolve(range(5)) == [3, 4]
 
         assert not case.resolve(42)
+
+    def test_bool(self):
+        case = F.foo.bar.baz
+        assert bool(case) is True
