@@ -244,8 +244,8 @@ class MagicFilter:
         regexp_mode = pattern.search if search else pattern.match
         return self._extend(FunctionOperation(regexp_mode))
 
-    def func(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
-        return self._extend(FunctionOperation(func))
+    def func(self: MagicT, func: Callable[[Any], Any], *args: Any, **kwargs: Any) -> MagicT:
+        return self._extend(FunctionOperation(func, *args, **kwargs))
 
     def cast(self: MagicT, func: Callable[[Any], Any]) -> MagicT:
         return self._extend(CastOperation(func))
