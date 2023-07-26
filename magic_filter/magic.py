@@ -1,7 +1,7 @@
 import operator
 import re
 from functools import wraps
-from typing import Any, Callable, Optional, Pattern, Sequence, Set, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Container, Optional, Pattern, Tuple, Type, TypeVar, Union
 
 from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
 from magic_filter.operations import (
@@ -221,10 +221,10 @@ class MagicFilter:
     def is_not(self: MagicT, value: Any) -> MagicT:
         return self._extend(CombinationOperation(right=value, combinator=operator.is_not))
 
-    def in_(self: MagicT, iterable: Union[Sequence[Any], Set[Any]]) -> MagicT:
+    def in_(self: MagicT, iterable: Container[Any]) -> MagicT:
         return self._extend(FunctionOperation(in_op, iterable))
 
-    def not_in(self: MagicT, iterable: Union[Sequence[Any], Set[Any]]) -> MagicT:
+    def not_in(self: MagicT, iterable: Container[Any]) -> MagicT:
         return self._extend(FunctionOperation(not_in_op, iterable))
 
     def contains(self: MagicT, value: Any) -> MagicT:
