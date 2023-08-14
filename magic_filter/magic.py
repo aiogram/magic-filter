@@ -24,6 +24,15 @@ from magic_filter.util import and_op, contains_op, in_op, not_contains_op, not_i
 MagicT = TypeVar("MagicT", bound="MagicFilter")
 
 
+# todo it seems to be moved somewhere :D
+class RegexpMode:
+    SEARCH = "search"
+    MATCH = "match"
+    FINDALL = "findall"
+    FINDITER = "finditer"
+    FULLMATCH = "fullmatch"
+
+
 class MagicFilter:
     __slots__ = ("_operations",)
 
@@ -240,13 +249,13 @@ class MagicFilter:
         self: MagicT,
         pattern: Union[str, Pattern[str]],
         *,
-        search: bool = False,
+        mode: str = RegexpMode.MATCH,
         flags: Union[int, re.RegexFlag] = 0,
     ) -> MagicT:
         if isinstance(pattern, str):
             pattern = re.compile(pattern, flags=flags)
-        regexp_mode = pattern.search if search else pattern.match
-        return self._extend(FunctionOperation(regexp_mode))
+        regex_func = getattr(pattern, mode)
+        return self._extend(FunctionOperation(regex_func))
 
     def func(self: MagicT, func: Callable[[Any], Any], *args: Any, **kwargs: Any) -> MagicT:
         return self._extend(FunctionOperation(func, *args, **kwargs))
