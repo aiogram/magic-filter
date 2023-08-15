@@ -235,10 +235,10 @@ class MagicFilter:
     def is_not(self: MagicT, value: Any) -> MagicT:
         return self._extend(CombinationOperation(right=value, combinator=operator.is_not))
 
-    def in_(self: MagicT, iterable: Container[Any]) -> MagicT:
+    def in_(self: MagicT, iterable: Union[Container[Any], MagicT]) -> MagicT:
         return self._extend(FunctionOperation(in_op, iterable))
 
-    def not_in(self: MagicT, iterable: Container[Any]) -> MagicT:
+    def not_in(self: MagicT, iterable: Union[Container[Any], MagicT]) -> MagicT:
         return self._extend(FunctionOperation(not_in_op, iterable))
 
     def contains(self: MagicT, value: Any) -> MagicT:
