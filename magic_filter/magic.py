@@ -2,8 +2,14 @@ import operator
 import re
 from functools import wraps
 from typing import Any, Callable, Container, Optional, Pattern, Tuple, Type, TypeVar, Union
+from warnings import warn
 
-from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
+from magic_filter.exceptions import (
+    ParamsConflict,
+    RejectOperations,
+    SwitchModeToAll,
+    SwitchModeToAny,
+)
 from magic_filter.operations import (
     BaseOperation,
     CallOperation,
@@ -24,7 +30,6 @@ from magic_filter.util import and_op, contains_op, in_op, not_contains_op, not_i
 MagicT = TypeVar("MagicT", bound="MagicFilter")
 
 
-# todo it seems to be moved somewhere :D
 class RegexpMode:
     SEARCH = "search"
     MATCH = "match"
@@ -249,11 +254,29 @@ class MagicFilter:
         self: MagicT,
         pattern: Union[str, Pattern[str]],
         *,
-        mode: str = RegexpMode.MATCH,
+        mode: Optional[str] = None,
+        search: Optional[bool] = None,
         flags: Union[int, re.RegexFlag] = 0,
     ) -> MagicT:
+
+        if search is not None:
+            warn(
+                "Param 'search' is deprecated, use 'mode' instead.",
+                DeprecationWarning,
+            )
+
+            if mode is not None:
+                msg = "Can't pass both 'search' and 'mode' params."
+                raise ParamsConflict(msg)
+
+            mode = RegexpMode.SEARCH if search else RegexpMode.MATCH
+
+        if mode is None:
+            mode = RegexpMode.MATCH
+
         if isinstance(pattern, str):
             pattern = re.compile(pattern, flags=flags)
+
         regex_func = getattr(pattern, mode)
         return self._extend(FunctionOperation(regex_func))
 
