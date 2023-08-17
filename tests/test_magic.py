@@ -1,9 +1,11 @@
+import warnings
 from collections import namedtuple
 from typing import Any, NamedTuple, Optional
 
 import pytest
 
-from magic_filter import F, MagicFilter
+from magic_filter import F, MagicFilter, RegexpMode
+from magic_filter.exceptions import ParamsConflict
 
 Job = namedtuple("Job", ["place", "salary", "position"])
 
@@ -84,8 +86,6 @@ class TestMagicFilter:
             F.age.in_(range(15, 40)),
             F.job.place.in_({"New York", "WDC"}),
             F.age.not_in(range(40, 100)),
-            F.about.regexp(r"Gonna .+"),
-            F.about.regexp(r".+"),
             F.about.contains("Factory"),
             F.job.place.lower().contains("n"),
             F.job.place.upper().contains("N"),
@@ -159,3 +159,81 @@ class TestMagicFilter:
     def test_bool(self):
         case = F.foo.bar.baz
         assert bool(case) is True
+
+
+class TestMagicRegexpFilter:
+    @pytest.mark.parametrize(
+        "case,result",
+        [
+            (F.about.regexp(r"Gonna .+"), True),
+            (F.about.regexp(r".+"), True),
+            (F.about.regexp(r"Gonna .+", mode=RegexpMode.MATCH), True),
+            (F.about.regexp(r"fly"), False),
+            (F.about.regexp(r"fly", search=False), False),
+        ],
+    )
+    def test_match(self, case: MagicFilter, user: User, result: bool):
+        assert bool(case.resolve(user)) is result
+
+    @pytest.mark.parametrize(
+        "case,result",
+        [
+            (F.about.regexp(r"fly", search=True), True),
+            (F.about.regexp(r"fly", mode=RegexpMode.SEARCH), True),
+            (F.about.regexp(r"run", mode=RegexpMode.SEARCH), False),
+        ],
+    )
+    def test_search(self, case: MagicFilter, user: User, result: bool):
+        assert bool(case.resolve(user)) is result
+
+    @pytest.mark.parametrize(
+        "case,result",
+        [
+            (F.job.place.regexp(r"[A-Z]", mode=RegexpMode.FINDALL), ['N', 'Y']),
+        ],
+    )
+    def test_findall(self, case: MagicFilter, user: User, result: bool):
+        assert case.resolve(user) == result
+
+    @pytest.mark.parametrize(
+        "case,result",
+        [
+            (F.about.regexp(r"(\w{5,})", mode=RegexpMode.FINDITER),
+             ['Gonna', 'Factory']),
+        ],
+    )
+    def test_finditer(self, case: MagicFilter, user: User, result: bool):
+        assert [m.group() for m in case.resolve(user)] == result
+
+    @pytest.mark.parametrize(
+        "case,result",
+        [
+            (F.job.place.regexp(r"New York", mode=RegexpMode.FULLMATCH), True),
+            (F.job.place.regexp(r"Old York", mode=RegexpMode.FULLMATCH), False),
+        ],
+    )
+    def test_full_match(self, case: MagicFilter, user: User, result: bool):
+        assert bool(case.resolve(user)) is result
+
+    @pytest.mark.parametrize("search", [True, False])
+    def test_search_deprecation(self, search):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            F.about.regexp(r"test deprecation", search=search)
+            assert len(w) == 1
+            assert issubclass(w[-1].category, DeprecationWarning)
+
+    @pytest.mark.parametrize(
+        "mode",
+        [
+            RegexpMode.SEARCH,
+            RegexpMode.MATCH,
+            RegexpMode.FULLMATCH,
+            RegexpMode.FINDALL,
+            RegexpMode.FINDITER,
+        ]
+    )
+    @pytest.mark.parametrize("search", [True, False])
+    def test_params_conflict(self, search, mode):
+        with pytest.raises(ParamsConflict):
+            F.about.regexp(r"", search=search, mode=mode)

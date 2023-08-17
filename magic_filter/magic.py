@@ -2,8 +2,14 @@ import operator
 import re
 from functools import wraps
 from typing import Any, Callable, Container, Optional, Pattern, Tuple, Type, TypeVar, Union
+from warnings import warn
 
-from magic_filter.exceptions import RejectOperations, SwitchModeToAll, SwitchModeToAny
+from magic_filter.exceptions import (
+    ParamsConflict,
+    RejectOperations,
+    SwitchModeToAll,
+    SwitchModeToAny,
+)
 from magic_filter.operations import (
     BaseOperation,
     CallOperation,
@@ -22,6 +28,14 @@ from magic_filter.operations import (
 from magic_filter.util import and_op, contains_op, in_op, not_contains_op, not_in_op, or_op
 
 MagicT = TypeVar("MagicT", bound="MagicFilter")
+
+
+class RegexpMode:
+    SEARCH = "search"
+    MATCH = "match"
+    FINDALL = "findall"
+    FINDITER = "finditer"
+    FULLMATCH = "fullmatch"
 
 
 class MagicFilter:
@@ -240,13 +254,31 @@ class MagicFilter:
         self: MagicT,
         pattern: Union[str, Pattern[str]],
         *,
-        search: bool = False,
+        mode: Optional[str] = None,
+        search: Optional[bool] = None,
         flags: Union[int, re.RegexFlag] = 0,
     ) -> MagicT:
+
+        if search is not None:
+            warn(
+                "Param 'search' is deprecated, use 'mode' instead.",
+                DeprecationWarning,
+            )
+
+            if mode is not None:
+                msg = "Can't pass both 'search' and 'mode' params."
+                raise ParamsConflict(msg)
+
+            mode = RegexpMode.SEARCH if search else RegexpMode.MATCH
+
+        if mode is None:
+            mode = RegexpMode.MATCH
+
         if isinstance(pattern, str):
             pattern = re.compile(pattern, flags=flags)
-        regexp_mode = pattern.search if search else pattern.match
-        return self._extend(FunctionOperation(regexp_mode))
+
+        regexp_func = getattr(pattern, mode)
+        return self._extend(FunctionOperation(regexp_func))
 
     def func(self: MagicT, func: Callable[[Any], Any], *args: Any, **kwargs: Any) -> MagicT:
         return self._extend(FunctionOperation(func, *args, **kwargs))

@@ -1,12 +1,13 @@
 from . import operations
 from .attrdict import AttrDict
-from .magic import MagicFilter, MagicT
+from .magic import MagicFilter, MagicT, RegexpMode
 
 __all__ = (
     "__version__",
     "operations",
     "MagicFilter",
     "MagicT",
+    "RegexpMode",
     "F",
     "AttrDict",
 )

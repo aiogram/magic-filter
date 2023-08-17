@@ -17,3 +17,7 @@ class SwitchModeToAny(SwitchMode):
 
 class RejectOperations(MagicFilterException):
     pass
+
+
+class ParamsConflict(MagicFilterException):
+    pass
