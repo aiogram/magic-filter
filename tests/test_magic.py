@@ -161,7 +161,7 @@ class TestMagicFilter:
         assert bool(case) is True
 
 
-class TestMagicRegexFilter:
+class TestMagicRegexpFilter:
     @pytest.mark.parametrize(
         "case,result",
         [

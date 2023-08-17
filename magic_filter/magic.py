@@ -277,8 +277,8 @@ class MagicFilter:
         if isinstance(pattern, str):
             pattern = re.compile(pattern, flags=flags)
 
-        regex_func = getattr(pattern, mode)
-        return self._extend(FunctionOperation(regex_func))
+        regexp_func = getattr(pattern, mode)
+        return self._extend(FunctionOperation(regexp_func))
 
     def func(self: MagicT, func: Callable[[Any], Any], *args: Any, **kwargs: Any) -> MagicT:
         return self._extend(FunctionOperation(func, *args, **kwargs))
