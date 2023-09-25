@@ -14,7 +14,7 @@ class ExtractOperation(BaseOperation):
 
     def resolve(self, value: Any, initial_value: Any) -> Any:
         if not isinstance(value, Iterable):
-            return False
+            return None
 
         result = []
         for item in value:
